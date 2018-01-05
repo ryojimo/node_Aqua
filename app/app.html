@@ -1,0 +1,397 @@
+<!--
+ * @fileoverview アプリケーション UI
+ * @author       Uz
+ * @version      0.0.1
+-->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>Bridge Terminal</title>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./style.css" type="text/css" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="/jQueryRotate.js"></script>
+  <script type="text/javascript" src="/app.js"></script>
+
+
+  <style>
+  body {
+      position: relative; 
+  }
+  #section_screen {padding-top:30px;/*height:700px*/;color: #fff; background-color: #2d2d30;}
+  #section_light  {padding-top:30px;/*height:200px*/;color: #fff; background-color: #cccc00;}
+  #section_music  {padding-top:30px;/*height:200px*/;color: #fff; background-color: #673ab7;}
+  #section_mic    {padding-top:30px;/*height:200px*/;color: #fff; background-color: #ff9800;}
+  #section_talk   {padding-top:30px;/*height:200px*/;color: #fff; background-color: #996633;}
+  #section_sensor_now   {padding-top:30px;/*height:200px;*/color: #fff; background-color: #00bcd4;}
+  #section_sensor_10sec {padding-top:30px;/*height:300px;*/color: #fff; background-color: #669999;}
+  #section_sensor_30sec {padding-top:30px;/*height:600px;*/color: #fff; background-color: #336699;}
+  #section_sensor_daily {padding-top:30px;/*height:600px;*/color: #fff; background-color: #009688;}
+  </style>
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">BT Sensors</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#section_screen">Screen</a></li>
+        <li><a href="#section_light" >Light</a></li>
+        <li><a href="#section_music" >Music</a></li>
+        <li><a href="#section_mic"   >Mic</a></li>
+        <li><a href="#section_talk"   >Talk</a></li>
+        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sensor<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#section_sensor_now">Sensor Now</a></li>
+            <li><a href="#section_sensor_10sec">Sensor 10sec</a></li>
+            <li><a href="#section_sensor_30sec">Sensor 30sec</a></li>
+            <li><a href="#section_sensor_daily">Sensor Daily</a></li>
+          </ul>
+        </li>
+        <li><a href="#"><span class="glyphicon glyphicon-search"></span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Screen -->
+<div id="section_screen" class="container-fluid bg-1">
+<section>
+  <h1>Screen</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-8">
+        <!-- Screen -->
+        <center>
+        <div id="cam_screen">
+          <img class="img-thumbnail" alt="" height="100%" src="http://192.168.91.11:8080/?action=stream">
+        </div>
+        </center>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="well" style="background:rgba(0,0,0,0.2);">
+          <div class="row">
+            <div class="col-sm-12">
+              ・画面回転：
+              <!-- Monitor Screen Control bar -->
+              <span id="val_rotate">0</span> °
+              <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( this.value )">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12">
+              ・サーボモータ・コントロール：
+              <!-- SERVO Motor Control bar -->
+              <span id="val_servo">50</span> %
+              <input class="slider-width" type="range" width="40%" name="num" min="20" max="70" step="2" value="50" onchange="sendSetCmdServo( 'sudo ./board.out motorsv ' + (90 - this.value) )" id="val_range">
+              <!-- <input type="submit" class="button" onclick="sendSetCmdServo( 'sudo ./board.out motorsv auto' );" value="AUTO" /> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<br/>
+</div>
+
+
+<!-- Light -->
+<div id="section_light" class="container-fluid">
+<section>
+  <h1>Light</h1>
+  <p>ON したままだと、まぶしいので基本的に OFF にしましょう。</p>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
+</section>
+<br/>
+</div>
+
+
+<!-- Music -->
+<div id="section_music" class="container-fluid">
+<section>
+  <h1>Music</h1>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'GET PID' );">GET PID</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'PLAY'    );">PLAY</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'STOP'    );">STOP</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'PAUSE'   );">PAUSE</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'RESUME'  );">RESUME</button>
+</section>
+<br/>
+</div>
+
+
+<!-- Mic -->
+<div id="section_mic" class="container-fluid">
+<section>
+  <h1>Mic</h1>
+  <textarea class="form-control" name="cmnt" rows="2" id="val_cmnt" placeholder="" style="color: #000;"></textarea>
+  <br/>
+  <button type="button" class="btn btn-default btn-lg" onclick="submitMicStart();">マイク ON</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="submitMicStop();" >マイク OFF</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendCmnt();"      >投稿</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="clearCmnt();"     >クリア</button>
+</section>
+<br/>
+</div>
+
+
+<!-- Talk -->
+<div id="section_talk" class="container-fluid">
+<section>
+  <h1>Talk</h1>
+  <select style="color: #000;" name="話し手" oninput="sendTalk();" id="val_talker">
+    <option value="nozomi">nozomi</option>
+    <option value="maki">maki</option>
+    <option value="kaho">kaho</option>
+    <option value="akari">akari</option>
+    <option value="nanako">nanako</option>
+    <option value="seiji">seiji</option>
+    <option value="osamu">osamu</option>
+    <option value="hiroshi">hiroshi</option>
+    <option value="anzu">anzu</option>
+  </select>
+  <br/>
+  <textarea class="form-control" name="cmnt" rows="2" id="val_talk" placeholder="" style="color: #000;"></textarea>
+  <br/>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendTalk();">送信</button>
+</section>
+<br/>
+</div>
+
+
+<!-- Sensor Now -->
+<div id="section_sensor_now" class="container-fluid">
+<section>
+  <h1>Sensor Now</h1>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc x');">加速度(x) [?]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc y');">加速度(y) [?]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc z');">加速度(z) [?]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_gyro g1');">ジャイロ(g1) [?]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_gyro g2');">ジャイロ(g2) [?]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 atmos');">気圧(BME280) [hPa]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 humi');">湿度(BME280) [%]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 temp');">温度(BME280) [℃]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_gp2y0e03');">距離 [cm]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_lps25h temp');">温度(LPS25H) [℃]</button>
+  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_tsl2561 lux');">照度 [ルクス]</button>
+
+  <h3>現在値：<span id="val_sensor">--</span></h3>
+</section>
+<br/>
+</div>
+
+
+<!-- Sensor 10sec -->
+<div id="section_sensor_10sec" class="container-fluid">
+<section>
+  <h1>Sensor 10sec</h1>
+  <p>10sec ごとのセンサ値を表示します。</p>
+
+  <div class="container table-responsive">
+    <table class="table table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>センサ</th>
+          <th>単位</th>
+          <th>値</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>加速度(x)</td>
+          <td>[?]</td>
+          <td><span class="fix" id="val_sa_acc_x">--</span></td>
+        </tr>
+        <tr>
+          <td>加速度(y)</td>
+          <td>[?]</td>
+          <td><span class="fix" id="val_sa_acc_y">--</span></td>
+        </tr>
+        <tr>
+          <td>加速度(z)</td>
+          <td>[?]</td>
+          <td><span class="fix" id="val_sa_acc_z">--</span></td>
+        </tr>
+        <tr>
+          <td>ジャイロ(g1)</td>
+          <td>[?]</td>
+          <td><span class="fix" id="val_sa_gyro_g1">--</span></td>
+        </tr>
+        <tr>
+          <td>ジャイロ(g2)</td>
+          <td>[?]</td>
+          <td><span class="fix" id="val_sa_gyro_g2">--</span></td>
+        </tr>
+        <tr>
+          <td>気圧(BME280)</td>
+          <td>[hPa]</td>
+          <td><span class="fix" id="val_si_bme280_atmos">--</span></td>
+        </tr>
+        <tr>
+          <td>湿度(BME280)</td>
+          <td>[%]</td>
+          <td><span class="fix" id="val_si_bme280_humi">--</span></td>
+        </tr>
+        <tr>
+          <td>温度(BME280)</td>
+          <td>[℃]</td>
+          <td><span class="fix" id="val_si_bme280_temp">--</span></td>
+        </tr>
+        <tr>
+          <td>距離</td>
+          <td>[cm]</td>
+          <td><span class="fix" id="val_si_gp2y0e03">--</span></td>
+        </tr>
+        <tr>
+          <td>気圧(LPS25H)</td>
+          <td>[hPa]</td>
+          <td><span class="fix" id="val_si_lps25h_atmos">--</span></td>
+        </tr>
+        <tr>
+          <td>温度(LPS25H)</td>
+          <td>[℃]</td>
+          <td><span class="fix" id="val_si_lps25h_temp">--</span></td>
+        </tr>
+        <tr>
+          <td>照度</td>
+          <td>[ルクス]</td>
+          <td><span class="fix" id="val_si_tsl2561_lux">--</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<br/>
+</div>
+
+
+<!-- Sensor 30sec -->
+<div id="section_sensor_30sec" class="container-fluid">
+<section>
+  <h1>Sensor 30sec</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-2 chart" id="cid_sa_acc_x"></div>
+      <div class="col-sm-2 chart" id="cid_sa_acc_y"></div>
+      <div class="col-sm-2 chart" id="cid_sa_acc_z"></div>
+      <div class="col-sm-2 chart" id="cid_sa_gyro_g1"></div>
+      <div class="col-sm-2 chart" id="cid_sa_gyro_g2"></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 chart" id="cid_si_bme280_atmos"></div>
+      <div class="col-sm-3 chart" id="cid_si_bme280_humi"></div>
+      <div class="col-sm-3 chart" id="cid_si_bme280_temp"></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 chart" id="cid_si_gp2y0e03"></div>
+      <div class="col-sm-3 chart" id="cid_si_lps25h_atmos"></div>
+      <div class="col-sm-3 chart" id="cid_si_lps25h_temp"></div>
+      <div class="col-sm-3 chart" id="cid_si_tsl2561_lux"></div>
+    </div>
+  </div>
+</section>
+<br/>
+</div>
+
+
+<!-- Sensor Daily -->
+<div id="section_sensor_daily" class="container-fluid">
+<section>
+  <h1>Sensor Daily</h1>
+  <p>2017/12/24 から計測開始。</p>
+
+  <input style="color: #000;" type="date" name="日時指定" oninput="sendGetCmdSensorOneDay();" id="val_date">
+  <select style="color: #000;" name="センサ" oninput="sendGetCmdSensorOneDay();" id="val_which">
+    <option value="sa_acc_x">加速度 X方向</option>
+    <option value="sa_acc_y">加速度 Y方向</option>
+    <option value="sa_acc_z">加速度 Z方向</option>
+    <option value="sa_gyro_g1">ジャイロ G1 方向</option>
+    <option value="sa_gyro_g2">ジャイロ G2 方向</option>
+    <option value="si_bme280_atmos">気圧(BME280)</option>
+    <option value="si_bme280_humi">湿度(BME280)</option>
+    <option value="si_bme280_temp">温度(BME280)</option>
+    <option value="si_gp2y0e03">距離</option>
+    <option value="si_lps25h_atmos">気圧(LPS25H)</option>
+    <option value="si_lps25h_temp">温度(LPS25H)</option>
+    <option value="si_tsl2561_lux">照度</option>
+  </select>
+  <div class="chartDaily" id="cid_sensors_daily"></div>
+</section>
+<br/>
+</div>
+
+
+<!-- Footer -->
+<footer class="text-center">
+  <a class="up-arrow" href="#" data-toggle="tooltip" title="TO TOP">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+  </a><br><br>
+  <p>BT Sensors Made By <a href="#" data-toggle="tooltip" title="Visit uzeeze">www.uzeeze.com</a></p> 
+</footer>
+
+<script>
+$(document).ready(function(){
+  // Initialize Tooltip
+  $('[data-toggle="tooltip"]').tooltip(); 
+
+  // Add smooth scrolling to all links in navbar + footer link
+  $(".navbar a, footer a[href='#']").on('click', function(event) {
+
+    // Make sure this.hash has a value before overriding default behavior
+    if (this.hash !== "") {
+
+      // Prevent default anchor click behavior
+      event.preventDefault();
+
+      // Store hash
+      var hash = this.hash;
+
+      // Using jQuery's animate() method to add smooth page scroll
+      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, 900, function(){
+   
+        // Add hash (#) to URL when done scrolling (default click behavior)
+        window.location.hash = hash;
+      });
+    } // End if
+  });
+})
+</script>
+</body>
+</html>
