@@ -124,29 +124,13 @@ var io = socketio.listen( server );
 //-----------------------------------------------------------------------------
 var timerFlg;
 
-var cmnt    = new DataCmnt();
-
-var sa_acc_x   = new DataSensor( 'sa_acc_x'   );
-var sa_acc_y   = new DataSensor( 'sa_acc_y'   );
-var sa_acc_z   = new DataSensor( 'sa_acc_z'   );
-
-var sa_gyro_g1 = new DataSensor( 'sa_gyro_g1' );
-var sa_gyro_g2 = new DataSensor( 'sa_gyro_g2' );
-
-var si_bme280_atmos = new DataSensor( 'si_bme280_atmos' );
-var si_bme280_humi  = new DataSensor( 'si_bme280_humi'  );
-var si_bme280_temp  = new DataSensor( 'si_bme280_temp'  );
-
-var si_gp2y0e03     = new DataSensor( 'si_gp2y0e03'     );
+var si_hdc1000_humi  = new DataSensor( 'si_hdc1000_humi'  );
+var si_hdc1000_temp  = new DataSensor( 'si_hdc1000_temp'  );
 
 var si_lps25h_atmos = new DataSensor( 'si_lps25h_atmos' );
 var si_lps25h_temp  = new DataSensor( 'si_lps25h_temp'  );
 
 var si_tsl2561_lux  = new DataSensor( 'si_tsl2561_lux'  );
-
-var docomo  = new Docomo();
-var music   = new PlayMusic();
-var music_pid = 0;
 
 
 startSystem();
@@ -219,17 +203,8 @@ io.sockets.on( 'connection', function( socket ){
     var ret = false;
     switch( data.sensor )
     {
-    case sa_acc_x.name   : ret = sa_acc_x.UpdateDataOneDay( file );   obj = sa_acc_x.dataOneDay;   break;
-    case sa_acc_y.name   : ret = sa_acc_y.UpdateDataOneDay( file );   obj = sa_acc_y.dataOneDay;   break;
-    case sa_acc_z.name   : ret = sa_acc_z.UpdateDataOneDay( file );   obj = sa_acc_z.dataOneDay;   break;
-    case sa_gyro_g1.name : ret = sa_gyro_g1.UpdateDataOneDay( file ); obj = sa_gyro_g1.dataOneDay; break;
-    case sa_gyro_g2.name : ret = sa_gyro_g2.UpdateDataOneDay( file ); obj = sa_gyro_g2.dataOneDay; break;
-
-    case si_bme280_atmos.name : ret = si_bme280_atmos.UpdateDataOneDay( file ); obj = si_bme280_atmos.dataOneDay; break;
-    case si_bme280_humi.name  : ret = si_bme280_humi.UpdateDataOneDay( file );  obj = si_bme280_humi.dataOneDay;  break;
-    case si_bme280_temp.name  : ret = si_bme280_temp.UpdateDataOneDay( file );  obj = si_bme280_temp.dataOneDay;  break;
-
-    case si_gp2y0e03.name     : ret = si_gp2y0e03.UpdateDataOneDay( file );     obj = si_gp2y0e03.dataOneDay;     break;
+    case si_hdc1000_humi.name  : ret = si_hdc1000_humi.UpdateDataOneDay( file );  obj = si_hdc1000_humi.dataOneDay;  break;
+    case si_hdc1000_temp.name  : ret = si_hdc1000_temp.UpdateDataOneDay( file );  obj = si_hdc1000_temp.dataOneDay;  break;
 
     case si_lps25h_atmos.name : ret = si_lps25h_atmos.UpdateDataOneDay( file ); obj = si_lps25h_atmos.dataOneDay; break;
     case si_lps25h_temp.name  : ret = si_lps25h_temp.UpdateDataOneDay( file );  obj = si_lps25h_temp.dataOneDay;  break;
@@ -277,45 +252,6 @@ io.sockets.on( 'connection', function( socket ){
   });
 
 
-  socket.on( 'C_to_S_MUSIC', function( data ){
-    console.log( "[main.js] " + 'C_to_S_MUSIC' );
-
-    if( data == 'GET PID' ){
-      music.GetPID( function( id ){
-        music_pid = id;
-        console.log( "[main.js] " + "pid=" + music_pid );
-      });
-    } else if( data == 'PLAY' ){
-      music.Play( 'Coldplay.mp3' );
-    } else {
-      music.ChangeStatus( data );
-    }
-  });
-
-
-  socket.on( 'C_to_S_TALK', function( cmnt ){
-    console.log( "[main.js] " + 'C_to_S_TALK' );
-    console.log( "[main.js] cmnt = " + cmnt );
-
-    docomo.Update( "nozomi", "hello" );
-    docomo.Talk( cmnt, function(){
-      io.sockets.emit( 'S_to_C_TALK_CB', {value:true} )
-    });
-  });
-
-
-  socket.on( 'C_to_S_TALK_W_NAME', function( data ){
-    console.log( "[main.js] " + 'C_to_S_TALK_W_NAME' );
-    console.log( "[main.js] data = " + data );
-    console.log( "[main.js] data.talker = " + data.talker );
-    console.log( "[main.js] data.cmnt   = " + data.cmnt );
-
-    docomo.Update( data.talker , "hello" );
-    docomo.Talk( data.cmnt, function(){
-    });
-  });
-
-
 });
 
 
@@ -340,48 +276,24 @@ function getSensorDataLast30s( cmd ){
 
       var obj = (new Function("return " + stdout))();
 
-      sa_acc_x.UpdateDataLast30s( obj.sa_acc_x );
-      sa_acc_y.UpdateDataLast30s( obj.sa_acc_y );
-      sa_acc_z.UpdateDataLast30s( obj.sa_acc_z );
-      sa_gyro_g1.UpdateDataLast30s( obj.sa_gyro_g1 );
-      sa_gyro_g2.UpdateDataLast30s( obj.sa_gyro_g2 );
-
-      si_bme280_atmos.UpdateDataLast30s( obj.si_bme280_atmos );
-      si_bme280_humi.UpdateDataLast30s( obj.si_bme280_humi );
-      si_bme280_temp.UpdateDataLast30s( obj.si_bme280_temp );
-
-      si_gp2y0e03.UpdateDataLast30s( obj.si_gp2y0e03 );
+      si_hdc1000_humi.UpdateDataLast30s( obj.si_hdc1000_humi );
+      si_hdc1000_temp.UpdateDataLast30s( obj.si_hdc1000_temp );
 
       si_lps25h_atmos.UpdateDataLast30s( obj.si_lps25h_atmos );
       si_lps25h_temp.UpdateDataLast30s( obj.si_lps25h_temp );
 
       si_tsl2561_lux.UpdateDataLast30s( obj.si_tsl2561_lux );
 
-      var data = { sa_acc_x:0,
-                   sa_acc_y:0,
-                   sa_acc_z:0,
-                   sa_gyro_g1:0,
-                   sa_gyro_g2:0,
-                   si_bme280_atmos:0,
-                   si_bme280_humi:0,
-                   si_bme280_temp:0,
-                   si_gp2y0e03:0,
+      var data = { 
+                   si_hdc1000_humi:0,
+                   si_hdc1000_temp:0,
                    si_lps25h_atmos:0,
                    si_lps25h_temp:0,
                    si_tsl2561_lux:0
       };
 
-      data.sa_acc_x   = sa_acc_x.dataLast30s;
-      data.sa_acc_y   = sa_acc_y.dataLast30s;
-      data.sa_acc_z   = sa_acc_z.dataLast30s;
-      data.sa_gyro_g1 = sa_gyro_g1.dataLast30s;
-      data.sa_gyro_g2 = sa_gyro_g2.dataLast30s;
-
-      data.si_bme280_atmos = si_bme280_atmos.dataLast30s;
-      data.si_bme280_humi  = si_bme280_humi.dataLast30s;
-      data.si_bme280_temp  = si_bme280_temp.dataLast30s;
-
-      data.si_gp2y0e03     = si_gp2y0e03.dataLast30s;
+      data.si_hdc1000_humi  = si_hdc1000_humi.dataLast30s;
+      data.si_hdc1000_temp  = si_hdc1000_temp.dataLast30s;
 
       data.si_lps25h_atmos = si_lps25h_atmos.dataLast30s;
       data.si_lps25h_temp  = si_lps25h_temp.dataLast30s;
@@ -389,25 +301,7 @@ function getSensorDataLast30s( cmd ){
       data.si_tsl2561_lux  = si_tsl2561_lux.dataLast30s;
 //      console.log( "[main.js] data = " + JSON.stringify(data) );
 
-      // 加速度センサとジャイロセンサの "10秒前" と" 今" の値に大きな差があるか？をチェック
-      var diff_sa_acc_x   = false;
-      var diff_sa_acc_y   = false;
-      var diff_sa_acc_z   = false;
-      var diff_sa_gyro_g1 = false;
-      var diff_sa_gyro_g2 = false;
-
-      diff_sa_acc_x   = sa_acc_x.IsLargeDiff();
-      diff_sa_acc_y   = sa_acc_y.IsLargeDiff();
-      diff_sa_acc_z   = sa_acc_z.IsLargeDiff();
-      diff_sa_gyro_g1 = sa_gyro_g1.IsLargeDiff();
-      diff_sa_gyro_g2 = sa_gyro_g2.IsLargeDiff();
-
       var diff_all = false;
-      if( diff_sa_acc_x   == true || diff_sa_acc_z   == true ||
-          diff_sa_gyro_g1 == true || diff_sa_gyro_g2 == true ){
-        diff_all = true;
-      }
-
       console.log( "[main.js] diff_all = " + diff_all );
       io.sockets.emit( 'S_to_C_DATA_LAST30S', {diff:diff_all, value:JSON.stringify(data)} );
   });

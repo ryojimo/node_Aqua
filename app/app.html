@@ -38,10 +38,6 @@
       position: relative; 
   }
   #section_screen {padding-top:30px;/*height:700px*/;color: #fff; background-color: #2d2d30;}
-  #section_light  {padding-top:30px;/*height:200px*/;color: #fff; background-color: #cccc00;}
-  #section_music  {padding-top:30px;/*height:200px*/;color: #fff; background-color: #673ab7;}
-  #section_mic    {padding-top:30px;/*height:200px*/;color: #fff; background-color: #ff9800;}
-  #section_talk   {padding-top:30px;/*height:200px*/;color: #fff; background-color: #996633;}
   #section_sensor_now   {padding-top:30px;/*height:200px;*/color: #fff; background-color: #00bcd4;}
   #section_sensor_10sec {padding-top:30px;/*height:300px;*/color: #fff; background-color: #669999;}
   #section_sensor_30sec {padding-top:30px;/*height:600px;*/color: #fff; background-color: #336699;}
@@ -63,10 +59,6 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#section_screen">Screen</a></li>
-        <li><a href="#section_light" >Light</a></li>
-        <li><a href="#section_music" >Music</a></li>
-        <li><a href="#section_mic"   >Mic</a></li>
-        <li><a href="#section_talk"   >Talk</a></li>
         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Sensor<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#section_sensor_now">Sensor Now</a></li>
@@ -88,105 +80,59 @@
   <h1>Screen</h1>
   <div class="container">
     <div class="row">
-      <div class="col-sm-8">
-        <!-- Screen -->
-        <center>
-        <div id="cam_screen">
-          <img class="img-thumbnail" alt="" height="100%" src="http://192.168.91.11:8080/?action=stream">
+      <div class="col-md-6">
+        <div class="thumbnail">
+          <!-- Screen -->
+          <div id="cam_screen1">
+            <img alt="" src="http://192.168.91.11:8080/?action=stream" style="height:100%;width:100%">
+          </div>
         </div>
-        </center>
       </div>
 
-      <div class="col-sm-4">
+      <div class="col-md-6">
+        <div class="thumbnail">
+          <!-- Screen -->
+          <div id="cam_screen1">
+            <img alt="" src="http://192.168.91.11:8080/?action=stream" style="height:100%;width:100%">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
         <div class="well" style="background:rgba(0,0,0,0.2);">
-          <div class="row">
-            <div class="col-sm-12">
-              ・画面回転：
-              <!-- Monitor Screen Control bar -->
-              <span id="val_rotate">0</span> °
-              <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( this.value )">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-12">
-              ・サーボモータ・コントロール：
-              <!-- SERVO Motor Control bar -->
-              <span id="val_servo">50</span> %
-              <input class="slider-width" type="range" width="40%" name="num" min="20" max="70" step="2" value="50" onchange="sendSetCmdServo( 'sudo ./board.out motorsv ' + (90 - this.value) )" id="val_range">
-              <!-- <input type="submit" class="button" onclick="sendSetCmdServo( 'sudo ./board.out motorsv auto' );" value="AUTO" /> -->
-            </div>
-          </div>
+          ・画面回転：
+          <!-- Monitor Screen Control bar -->
+          <span id="val_rotate">0</span> °
+          <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( this.value )">
         </div>
       </div>
 
+      <div class="col-md-3">
+        <div class="well" style="background:rgba(0,0,0,0.2);">
+          ・Light：　
+          <!-- Light Controller -->
+          <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>　
+          <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="well" style="background:rgba(0,0,0,0.2);">
+          <select name="センサ" oninput="sendGetCmdSensorOneDay();" id="val_which" style="color: #000;">
+            <option value="si_hdc1000_humi">湿度(HDC1000)</option>
+            <option value="si_hdc1000_temp">温度(HDC1000)</option>
+            <option value="si_lps25h_atmos">気圧(LPS25H)</option>
+            <option value="si_lps25h_temp">温度(LPS25H)</option>
+            <option value="si_tsl2561_lux">照度</option>
+          </select>
+
+          <div class="col-sm-2 chart" id="cid_sa_acc_y"></div>
+        </div>
+      </div>
     </div>
   </div>
-</section>
-<br/>
-</div>
-
-
-<!-- Light -->
-<div id="section_light" class="container-fluid">
-<section>
-  <h1>Light</h1>
-  <p>ON したままだと、まぶしいので基本的に OFF にしましょう。</p>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
-</section>
-<br/>
-</div>
-
-
-<!-- Music -->
-<div id="section_music" class="container-fluid">
-<section>
-  <h1>Music</h1>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'GET PID' );">GET PID</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'PLAY'    );">PLAY</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'STOP'    );">STOP</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'PAUSE'   );">PAUSE</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendMusicCmd( 'RESUME'  );">RESUME</button>
-</section>
-<br/>
-</div>
-
-
-<!-- Mic -->
-<div id="section_mic" class="container-fluid">
-<section>
-  <h1>Mic</h1>
-  <textarea class="form-control" name="cmnt" rows="2" id="val_cmnt" placeholder="" style="color: #000;"></textarea>
-  <br/>
-  <button type="button" class="btn btn-default btn-lg" onclick="submitMicStart();">マイク ON</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="submitMicStop();" >マイク OFF</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendCmnt();"      >投稿</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="clearCmnt();"     >クリア</button>
-</section>
-<br/>
-</div>
-
-
-<!-- Talk -->
-<div id="section_talk" class="container-fluid">
-<section>
-  <h1>Talk</h1>
-  <select style="color: #000;" name="話し手" oninput="sendTalk();" id="val_talker">
-    <option value="nozomi">nozomi</option>
-    <option value="maki">maki</option>
-    <option value="kaho">kaho</option>
-    <option value="akari">akari</option>
-    <option value="nanako">nanako</option>
-    <option value="seiji">seiji</option>
-    <option value="osamu">osamu</option>
-    <option value="hiroshi">hiroshi</option>
-    <option value="anzu">anzu</option>
-  </select>
-  <br/>
-  <textarea class="form-control" name="cmnt" rows="2" id="val_talk" placeholder="" style="color: #000;"></textarea>
-  <br/>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendTalk();">送信</button>
 </section>
 <br/>
 </div>
@@ -196,18 +142,11 @@
 <div id="section_sensor_now" class="container-fluid">
 <section>
   <h1>Sensor Now</h1>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc x');">加速度(x) [?]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc y');">加速度(y) [?]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_acc z');">加速度(z) [?]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_gyro g1');">ジャイロ(g1) [?]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out sa_gyro g2');">ジャイロ(g2) [?]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 atmos');">気圧(BME280) [hPa]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 humi');">湿度(BME280) [%]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_bme280 temp');">温度(BME280) [℃]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_gp2y0e03');">距離 [cm]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_lps25h temp');">温度(LPS25H) [℃]</button>
-  <button type="button" class="btn btn-default btn-lg" onclick="sendGetCmd('sudo ./board.out si_tsl2561 lux');">照度 [ルクス]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 humi');">湿度(HDC1000) [%]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 temp');">温度(HDC1000) [℃]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_lps25h temp');">温度(LPS25H) [℃]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_tsl2561 lux');">照度 [ルクス]</button>
 
   <h3>現在値：<span id="val_sensor">--</span></h3>
 </section>
@@ -232,49 +171,14 @@
       </thead>
       <tbody>
         <tr>
-          <td>加速度(x)</td>
-          <td>[?]</td>
-          <td><span class="fix" id="val_sa_acc_x">--</span></td>
-        </tr>
-        <tr>
-          <td>加速度(y)</td>
-          <td>[?]</td>
-          <td><span class="fix" id="val_sa_acc_y">--</span></td>
-        </tr>
-        <tr>
-          <td>加速度(z)</td>
-          <td>[?]</td>
-          <td><span class="fix" id="val_sa_acc_z">--</span></td>
-        </tr>
-        <tr>
-          <td>ジャイロ(g1)</td>
-          <td>[?]</td>
-          <td><span class="fix" id="val_sa_gyro_g1">--</span></td>
-        </tr>
-        <tr>
-          <td>ジャイロ(g2)</td>
-          <td>[?]</td>
-          <td><span class="fix" id="val_sa_gyro_g2">--</span></td>
-        </tr>
-        <tr>
-          <td>気圧(BME280)</td>
-          <td>[hPa]</td>
-          <td><span class="fix" id="val_si_bme280_atmos">--</span></td>
-        </tr>
-        <tr>
-          <td>湿度(BME280)</td>
+          <td>湿度(HDC1000)</td>
           <td>[%]</td>
-          <td><span class="fix" id="val_si_bme280_humi">--</span></td>
+          <td><span class="fix" id="val_si_hdc1000_humi">--</span></td>
         </tr>
         <tr>
-          <td>温度(BME280)</td>
+          <td>温度(HDC1000)</td>
           <td>[℃]</td>
-          <td><span class="fix" id="val_si_bme280_temp">--</span></td>
-        </tr>
-        <tr>
-          <td>距離</td>
-          <td>[cm]</td>
-          <td><span class="fix" id="val_si_gp2y0e03">--</span></td>
+          <td><span class="fix" id="val_si_hdc1000_temp">--</span></td>
         </tr>
         <tr>
           <td>気圧(LPS25H)</td>
@@ -305,21 +209,14 @@
   <h1>Sensor 30sec</h1>
   <div class="container">
     <div class="row">
-      <div class="col-sm-2 chart" id="cid_sa_acc_x"></div>
-      <div class="col-sm-2 chart" id="cid_sa_acc_y"></div>
-      <div class="col-sm-2 chart" id="cid_sa_acc_z"></div>
-      <div class="col-sm-2 chart" id="cid_sa_gyro_g1"></div>
-      <div class="col-sm-2 chart" id="cid_sa_gyro_g2"></div>
+      <div class="col-sm-3 chart" id="cid_si_hdc1000_humi"></div>
+      <div class="col-sm-3 chart" id="cid_si_hdc1000_temp"></div>
     </div>
     <div class="row">
-      <div class="col-sm-3 chart" id="cid_si_bme280_atmos"></div>
-      <div class="col-sm-3 chart" id="cid_si_bme280_humi"></div>
-      <div class="col-sm-3 chart" id="cid_si_bme280_temp"></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-3 chart" id="cid_si_gp2y0e03"></div>
       <div class="col-sm-3 chart" id="cid_si_lps25h_atmos"></div>
       <div class="col-sm-3 chart" id="cid_si_lps25h_temp"></div>
+    </div>
+    <div class="row">
       <div class="col-sm-3 chart" id="cid_si_tsl2561_lux"></div>
     </div>
   </div>
@@ -332,19 +229,12 @@
 <div id="section_sensor_daily" class="container-fluid">
 <section>
   <h1>Sensor Daily</h1>
-  <p>2017/12/24 から計測開始。</p>
+  <p>2018/01/11 から計測開始。</p>
 
   <input style="color: #000;" type="date" name="日時指定" oninput="sendGetCmdSensorOneDay();" id="val_date">
   <select style="color: #000;" name="センサ" oninput="sendGetCmdSensorOneDay();" id="val_which">
-    <option value="sa_acc_x">加速度 X方向</option>
-    <option value="sa_acc_y">加速度 Y方向</option>
-    <option value="sa_acc_z">加速度 Z方向</option>
-    <option value="sa_gyro_g1">ジャイロ G1 方向</option>
-    <option value="sa_gyro_g2">ジャイロ G2 方向</option>
-    <option value="si_bme280_atmos">気圧(BME280)</option>
-    <option value="si_bme280_humi">湿度(BME280)</option>
-    <option value="si_bme280_temp">温度(BME280)</option>
-    <option value="si_gp2y0e03">距離</option>
+    <option value="si_hdc1000_humi">湿度(HDC1000)</option>
+    <option value="si_hdc1000_temp">温度(HDC1000)</option>
     <option value="si_lps25h_atmos">気圧(LPS25H)</option>
     <option value="si_lps25h_temp">温度(LPS25H)</option>
     <option value="si_tsl2561_lux">照度</option>

@@ -13,16 +13,8 @@ var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
 
 //-----------------------------------------------------------------------------
 //-------------------------------------
-var obj_sa_acc_x   = {chart:null, data:null};
-var obj_sa_acc_y   = {chart:null, data:null};
-var obj_sa_acc_z   = {chart:null, data:null};
-var obj_sa_gyro_g1 = {chart:null, data:null};
-var obj_sa_gyro_g2 = {chart:null, data:null};
-
-var obj_si_bme280_atmos = {chart:null, data:null};
-var obj_si_bme280_humi  = {chart:null, data:null};
-var obj_si_bme280_temp  = {chart:null, data:null};
-var obj_si_gp2y0e03     = {chart:null, data:null};
+var obj_si_hdc1000_humi  = {chart:null, data:null};
+var obj_si_hdc1000_temp  = {chart:null, data:null};
 var obj_si_lps25h_atmos = {chart:null, data:null};
 var obj_si_lps25h_temp  = {chart:null, data:null};
 var obj_si_tsl2561_lux  = {chart:null, data:null};
@@ -34,28 +26,13 @@ var obj_sensors_daily = {chart:null, data:null};
 window.onload = function(){
   console.log( "[app.js] window.onloaded" );
 
-  obj_sa_acc_x        = makeChart30s( "cid_sa_acc_x",        "sa_acc_x"        );
-  obj_sa_acc_y        = makeChart30s( "cid_sa_acc_y",        "sa_acc_y"        );
-  obj_sa_acc_z        = makeChart30s( "cid_sa_acc_z",        "sa_acc_z"        );
-  obj_sa_gyro_g1      = makeChart30s( "cid_sa_gyro_g1",      "sa_gyro_g1"      );
-  obj_sa_gyro_g2      = makeChart30s( "cid_sa_gyro_g2",      "sa_gyro_g2"      );
-  obj_si_bme280_atmos = makeChart30s( "cid_si_bme280_atmos", "si_bme280_atmos" );
-  obj_si_bme280_humi  = makeChart30s( "cid_si_bme280_humi",  "si_bme280_humi"  );
-  obj_si_bme280_temp  = makeChart30s( "cid_si_bme280_temp",  "si_bme280_temp"  );
-  obj_si_gp2y0e03     = makeChart30s( "cid_si_gp2y0e03",     "si_gp2y0e03"     );
+  obj_si_hdc1000_humi  = makeChart30s( "cid_si_hdc1000_humi",  "si_hdc1000_humi"  );
+  obj_si_hdc1000_temp  = makeChart30s( "cid_si_hdc1000_temp",  "si_hdc1000_temp"  );
   obj_si_lps25h_atmos = makeChart30s( "cid_si_lps25h_atmos", "si_lps25h_atmos" );
   obj_si_lps25h_temp  = makeChart30s( "cid_si_lps25h_temp",  "si_lps25h_temp"  );
   obj_si_tsl2561_lux  = makeChart30s( "cid_si_tsl2561_lux",  "si_tsl2561_lux"  );
-  obj_sa_acc_x.chart.render();
-  obj_sa_acc_x.chart.render();
-  obj_sa_acc_y.chart.render();
-  obj_sa_acc_z.chart.render();
-  obj_sa_gyro_g1.chart.render();
-  obj_sa_gyro_g2.chart.render();
-  obj_si_bme280_atmos.chart.render();
-  obj_si_bme280_humi.chart.render();
-  obj_si_bme280_temp.chart.render();
-  obj_si_gp2y0e03.chart.render();
+  obj_si_hdc1000_humi.chart.render();
+  obj_si_hdc1000_temp.chart.render();
   obj_si_lps25h_atmos.chart.render();
   obj_si_lps25h_temp.chart.render();
   obj_si_tsl2561_lux.chart.render();
@@ -154,38 +131,17 @@ server.on( 'S_to_C_DATA_LAST30S', function( data ){
 //  console.log( "[app.js] data.value = " + data.value );
 
   var obj = (new Function( "return " + data.value ))();
-  document.getElementById( "val_sa_acc_x"   ).innerHTML = obj.sa_acc_x["今"];    // 数値を表示
-  document.getElementById( "val_sa_acc_y"   ).innerHTML = obj.sa_acc_y["今"];    // 数値を表示
-  document.getElementById( "val_sa_acc_z"   ).innerHTML = obj.sa_acc_z["今"];    // 数値を表示
-  document.getElementById( "val_sa_gyro_g1" ).innerHTML = obj.sa_gyro_g1["今"];  // 数値を表示
-  document.getElementById( "val_sa_gyro_g2" ).innerHTML = obj.sa_gyro_g2["今"];  // 数値を表示
-
-  document.getElementById( "val_si_bme280_atmos" ).innerHTML = obj.si_bme280_atmos["今"];  // 数値を表示
-  document.getElementById( "val_si_bme280_humi"  ).innerHTML = obj.si_bme280_humi["今"];   // 数値を表示
-  document.getElementById( "val_si_bme280_temp"  ).innerHTML = obj.si_bme280_temp["今"];   // 数値を表示
-  document.getElementById( "val_si_gp2y0e03"     ).innerHTML = obj.si_gp2y0e03["今"];      // 数値を表示
+  document.getElementById( "val_si_hdc1000_humi"  ).innerHTML = obj.si_hdc1000_humi["今"];   // 数値を表示
+  document.getElementById( "val_si_hdc1000_temp"  ).innerHTML = obj.si_hdc1000_temp["今"];   // 数値を表示
   document.getElementById( "val_si_lps25h_atmos" ).innerHTML = obj.si_lps25h_atmos["今"];  // 数値を表示
   document.getElementById( "val_si_lps25h_temp"  ).innerHTML = obj.si_lps25h_temp["今"];   // 数値を表示
   document.getElementById( "val_si_tsl2561_lux"  ).innerHTML = obj.si_tsl2561_lux["今"];   // 数値を表示
 
-  updateChartLast30s( "obj_sa_acc_x",        obj.sa_acc_x  );
-  updateChartLast30s( "obj_sa_acc_y",        obj.sa_acc_y  );
-  updateChartLast30s( "obj_sa_acc_z",        obj.sa_acc_z  );
-  updateChartLast30s( "obj_sa_gyro_g1",      obj.sa_gyro_g1);
-  updateChartLast30s( "obj_sa_gyro_g2",      obj.sa_gyro_g2);
-
-  updateChartLast30s( "obj_si_bme280_atmos", obj.si_bme280_atmos);
-  updateChartLast30s( "obj_si_bme280_humi",  obj.si_bme280_humi );
-  updateChartLast30s( "obj_si_bme280_temp",  obj.si_bme280_temp );
-  updateChartLast30s( "obj_si_gp2y0e03",     obj.si_gp2y0e03    );
+  updateChartLast30s( "obj_si_hdc1000_humi",  obj.si_hdc1000_humi );
+  updateChartLast30s( "obj_si_hdc1000_temp",  obj.si_hdc1000_temp );
   updateChartLast30s( "obj_si_lps25h_atmos", obj.si_lps25h_atmos);
   updateChartLast30s( "obj_si_lps25h_temp",  obj.si_lps25h_temp );
   updateChartLast30s( "obj_si_tsl2561_lux",  obj.si_tsl2561_lux );
-
-  if( data.diff == true ){
-    var hi = "10秒以上の揺れを検出しました";
-    sendTalkData( hi );
-  }
 });
 
 
@@ -201,16 +157,8 @@ server.on( 'S_to_C_SENSOR_ONE_DAY', function( data ){
 
   var obj = (new Function("return " + data.value))();
   switch( str ){
-    case 'sa_acc_x'  : updateChartDaily( "sa_acc_x",   obj ); break;
-    case 'sa_acc_y'  : updateChartDaily( "sa_acc_y",   obj ); break;
-    case 'sa_acc_z'  : updateChartDaily( "sa_acc_z",   obj ); break;
-    case 'sa_gyro_g1': updateChartDaily( "sa_gyro_g1", obj ); break;
-    case 'sa_gyro_g2': updateChartDaily( "sa_gyro_g2", obj ); break;
-
-    case 'si_bme280_atmos': updateChartDaily( "si_bme280_atmos", obj ); break;
-    case 'si_bme280_humi' : updateChartDaily( "si_bme280_humi",  obj ); break;
-    case 'si_bme280_temp' : updateChartDaily( "si_bme280_temp",  obj ); break;
-    case 'si_gp2y0e03'    : updateChartDaily( "si_gp2y0e03",     obj ); break;
+    case 'si_hdc1000_humi' : updateChartDaily( "si_hdc1000_humi",  obj ); break;
+    case 'si_hdc1000_temp' : updateChartDaily( "si_hdc1000_temp",  obj ); break;
     case 'si_lps25h_atmos': updateChartDaily( "si_lps25h_atmos", obj ); break;
     case 'si_lps25h_temp' : updateChartDaily( "si_lps25h_temp",  obj ); break;
     case 'si_tsl2561_lux' : updateChartDaily( "si_tsl2561_lux",  obj ); break;
@@ -315,8 +263,8 @@ function sendGetCmdSensorOneDay(){
   console.log( "[app.js] date   = " + date );
   console.log( "[app.js] sensor = " + sensor );
 
-  if( date < "2017-12-24" ){
-    alert( "2017/12/24 以降を指定してください。" );
+  if( date < "2018-01-11" ){
+    alert( "2018/01/11 以降を指定してください。" );
   }
 
   var obj = { date:date, sensor:sensor };
@@ -338,161 +286,6 @@ function sendSetCmd( cmd ){
 
   console.log( "[app.js] server.emit(" + 'C_to_S_SET' + ")" );
   server.emit( 'C_to_S_SET', cmd );
-}
-
-
-/**
- * サーボモータを駆動するためのコマンドを送る。
- * @param {string} cmd - コマンドの文字列
- * @return {void}
- * @example
- * sendSetCmdServo( 'sudo ./board.out motorsv ' + 30 );
-*/
-function sendSetCmdServo( cmd ){
-  console.log( "[app.js] sendSetCmdServo()" );
-  console.log( "[app.js] cmd = " + cmd );
-
-  var str = $("#val_range").val();
-  console.log( "[app.js] str = " + str );
-
-  document.getElementById("val_servo").innerHTML = str.match( /\d+/ ); // 数値を表示
-
-  sendSetCmd( cmd );
-}
-
-
-/**
- * コメントのデータを送信する
- * @param {void}
- * @return {void}
- * @example
- * sendCmnt();
-*/
-function sendCmnt(){
-  console.log( "[app.js] sendCmnt()" );
-
-  // データをチェック
-  var cmnt = document.getElementById( "val_cmnt" );
-//  console.log( "[app.js] cmnt.value =" + cmnt.value );
-
-  // サーバーへデータを送信
-  if( cmnt.value == "" ){
-    alert( "ご要望・ご意見を記入してください。" );
-  } else{
-    console.log( "[app.js] server.emit(" + 'C_to_S_CMNT' + ")" );
-    server.emit( 'C_to_S_CMNT', cmnt.value );
-  }
-
-  // データをクリア
-  clearCmnt();
-}
-
-
-/**
- * コメントをクリアする
- * @param {void}
- * @return {void}
- * @example
- * clearCmnt();
-*/
-function clearCmnt(){
-  console.log( "[app.js] clearCmnt()" );
-  var cmnt = document.getElementById( "val_cmnt" );
-  cmnt.value = "";
-}
-
-
-/**
- * Music コマンド ( PLAY, PAUSE, STOP, RESUME ) を送る。
- * @param {string} cmd - 'start'/'stop'
- * @return {void}
- * @example
- * sendMusicCmd( 'PLAY' );
-*/
-function sendMusicCmd( cmd ){
-  console.log( "[app.js] sendMusicCmd()" );
-  console.log( "[app.js] cmd = " + cmd );
-
-  console.log( "[app.js] server.emit(" + 'C_to_S_MUSIC' + ")" );
-  server.emit( 'C_to_S_MUSIC', cmd );
-}
-
-
-/**
- * しゃべる文字データを送る。
- * @param {string} cmnt - しゃべる文字列
- * @return {void}
- * @example
- * sendTalkData( cmnt );
-*/
-function sendTalkData( cmnt ){
-  console.log( "[app.js] sendTalkData()" );
-  console.log( "[app.js] cmnt = " + cmnt );
-
-  console.log( "[app.js] server.emit(" + 'C_to_S_TALK' + ")" );
-  server.emit( 'C_to_S_TALK', cmnt );
-}
-
-
-/**
- * Mic 入力 / 停止
- * @param {void}
- * @return {void}
- * @example
- * submitMicStart(); / submitMicStop();
-*/
-window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
-var recognition = new webkitSpeechRecognition();
-recognition.lang = 'ja';
-
-
-// 録音終了時トリガー
-recognition.addEventListener( 'result', function(event){
-    var text = event.results.item(0).item(0).transcript;
-    console.log( "[app.js] text = " + text );
-    $("#val_cmnt").val( text );
-}, false );
-
-
-function submitMicStart(){
-  console.log( "[app.js] submitMicStart()" );
-
-  var hi = "ご用件をどうぞ";
-
-  sendTalkData( hi );
-//  recognition.start();
-}
-
-
-function submitMicStop(){
-  console.log( "[app.js] submitMicStop()" );
-  recognition.stop();
-}
-
-
-/**
- * トークのデータを送信する
- * @param {void}
- * @return {void}
- * @example
- * sendTalk();
-*/
-function sendTalk(){
-  console.log( "[app.js] sendTalk()" );
-
-  var talker = $("#val_talker").val();
-  var cmnt   = $("#val_talk").val();
-  console.log( "[app.js] talker = " + talker );
-  console.log( "[app.js] cmnt   = " + cmnt );
-
-  // サーバーへデータを送信
-  if( cmnt == "" ){
-    alert( "話す内容を記入してください。" );
-  } else{
-    var obj = { talker:talker, cmnt:cmnt };
-    console.log( "[app.js] server.emit(" + 'C_to_S_TALK_W_NAME' + ")" );
-    server.emit( 'C_to_S_TALK_W_NAME', obj );
-  }
 }
 
 
