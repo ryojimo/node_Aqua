@@ -5,7 +5,7 @@
 */
 //var sv_ip   = "sensor.rp.lfx.sony.co.jp";   // node.js server の IP アドレス
 //var sv_ip   = "43.31.78.45";                // node.js server の IP アドレス
-var sv_ip   = "192.168.91.11";                // node.js server の IP アドレス
+var sv_ip   = "192.168.91.103";               // node.js server の IP アドレス
 var sv_port = 3000;                           // node.js server の port 番号
 
 var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
@@ -13,11 +13,16 @@ var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
 
 //-----------------------------------------------------------------------------
 //-------------------------------------
-var obj_si_hdc1000_humi  = {chart:null, data:null};
-var obj_si_hdc1000_temp  = {chart:null, data:null};
+var obj_sa_water        = {chart:null, data:null};
+var obj_si_hdc1000_humi = {chart:null, data:null};
+var obj_si_hdc1000_temp = {chart:null, data:null};
 var obj_si_lps25h_atmos = {chart:null, data:null};
 var obj_si_lps25h_temp  = {chart:null, data:null};
 var obj_si_tsl2561_lux  = {chart:null, data:null};
+
+var obj_top_sa_water        = {chart:null, data:null};
+var obj_top_si_hdc1000_humi = {chart:null, data:null};
+var obj_top_si_hdc1000_temp = {chart:null, data:null};
 
 var obj_sensors_daily = {chart:null, data:null};
 
@@ -26,16 +31,25 @@ var obj_sensors_daily = {chart:null, data:null};
 window.onload = function(){
   console.log( "[app.js] window.onloaded" );
 
-  obj_si_hdc1000_humi  = makeChart30s( "cid_si_hdc1000_humi",  "si_hdc1000_humi"  );
-  obj_si_hdc1000_temp  = makeChart30s( "cid_si_hdc1000_temp",  "si_hdc1000_temp"  );
+  obj_sa_water        = makeChart30s( "cid_sa_water",        "sa_water"        );
+  obj_si_hdc1000_humi = makeChart30s( "cid_si_hdc1000_humi", "si_hdc1000_humi" );
+  obj_si_hdc1000_temp = makeChart30s( "cid_si_hdc1000_temp", "si_hdc1000_temp" );
   obj_si_lps25h_atmos = makeChart30s( "cid_si_lps25h_atmos", "si_lps25h_atmos" );
   obj_si_lps25h_temp  = makeChart30s( "cid_si_lps25h_temp",  "si_lps25h_temp"  );
   obj_si_tsl2561_lux  = makeChart30s( "cid_si_tsl2561_lux",  "si_tsl2561_lux"  );
+  obj_sa_water.chart.render();
   obj_si_hdc1000_humi.chart.render();
   obj_si_hdc1000_temp.chart.render();
   obj_si_lps25h_atmos.chart.render();
   obj_si_lps25h_temp.chart.render();
   obj_si_tsl2561_lux.chart.render();
+
+  obj_top_sa_water        = makeChart30s( "cid_top_sa_water",        "水位[cm]" );
+  obj_top_si_hdc1000_humi = makeChart30s( "cid_top_si_hdc1000_humi", "湿度[%]"  );
+  obj_top_si_hdc1000_temp = makeChart30s( "cid_top_si_hdc1000_temp", "温度[℃]" );
+  obj_top_sa_water.chart.render();
+  obj_top_si_hdc1000_humi.chart.render();
+  obj_top_si_hdc1000_temp.chart.render();
 
   obj_sensors_daily   = makeChart1d( "cid_sensors_daily",   "" );
   obj_sensors_daily.chart.render();
@@ -131,17 +145,24 @@ server.on( 'S_to_C_DATA_LAST30S', function( data ){
 //  console.log( "[app.js] data.value = " + data.value );
 
   var obj = (new Function( "return " + data.value ))();
-  document.getElementById( "val_si_hdc1000_humi"  ).innerHTML = obj.si_hdc1000_humi["今"];   // 数値を表示
-  document.getElementById( "val_si_hdc1000_temp"  ).innerHTML = obj.si_hdc1000_temp["今"];   // 数値を表示
-  document.getElementById( "val_si_lps25h_atmos" ).innerHTML = obj.si_lps25h_atmos["今"];  // 数値を表示
-  document.getElementById( "val_si_lps25h_temp"  ).innerHTML = obj.si_lps25h_temp["今"];   // 数値を表示
-  document.getElementById( "val_si_tsl2561_lux"  ).innerHTML = obj.si_tsl2561_lux["今"];   // 数値を表示
+  document.getElementById( "val_sa_water"        ).innerHTML = obj.sa_water["今"];        // 数値を表示
+  document.getElementById( "val_si_hdc1000_humi" ).innerHTML = obj.si_hdc1000_humi["今"]; // 数値を表示
+  document.getElementById( "val_si_hdc1000_temp" ).innerHTML = obj.si_hdc1000_temp["今"]; // 数値を表示
+  document.getElementById( "val_si_lps25h_atmos" ).innerHTML = obj.si_lps25h_atmos["今"]; // 数値を表示
+  document.getElementById( "val_si_lps25h_temp"  ).innerHTML = obj.si_lps25h_temp["今"];  // 数値を表示
+  document.getElementById( "val_si_tsl2561_lux"  ).innerHTML = obj.si_tsl2561_lux["今"];  // 数値を表示
 
-  updateChartLast30s( "obj_si_hdc1000_humi",  obj.si_hdc1000_humi );
-  updateChartLast30s( "obj_si_hdc1000_temp",  obj.si_hdc1000_temp );
-  updateChartLast30s( "obj_si_lps25h_atmos", obj.si_lps25h_atmos);
-  updateChartLast30s( "obj_si_lps25h_temp",  obj.si_lps25h_temp );
-  updateChartLast30s( "obj_si_tsl2561_lux",  obj.si_tsl2561_lux );
+  updateChartLast30s( "obj_sa_water",        obj.sa_water        );
+  updateChartLast30s( "obj_si_hdc1000_humi", obj.si_hdc1000_humi );
+  updateChartLast30s( "obj_si_hdc1000_temp", obj.si_hdc1000_temp );
+  updateChartLast30s( "obj_si_lps25h_atmos", obj.si_lps25h_atmos );
+  updateChartLast30s( "obj_si_lps25h_temp",  obj.si_lps25h_temp  );
+  updateChartLast30s( "obj_si_tsl2561_lux",  obj.si_tsl2561_lux  );
+
+  // トップに表示しているグラフを更新する
+  updateChartLast30s( "obj_top_sa_water",        obj.sa_water        );
+  updateChartLast30s( "obj_top_si_hdc1000_humi", obj.si_hdc1000_humi );
+  updateChartLast30s( "obj_top_si_hdc1000_temp", obj.si_hdc1000_temp );
 });
 
 
@@ -157,12 +178,13 @@ server.on( 'S_to_C_SENSOR_ONE_DAY', function( data ){
 
   var obj = (new Function("return " + data.value))();
   switch( str ){
-    case 'si_hdc1000_humi' : updateChartDaily( "si_hdc1000_humi",  obj ); break;
-    case 'si_hdc1000_temp' : updateChartDaily( "si_hdc1000_temp",  obj ); break;
+    case 'sa_water'       : updateChartDaily( "sa_water",        obj ); break;
+    case 'si_hdc1000_humi': updateChartDaily( "si_hdc1000_humi", obj ); break;
+    case 'si_hdc1000_temp': updateChartDaily( "si_hdc1000_temp", obj ); break;
     case 'si_lps25h_atmos': updateChartDaily( "si_lps25h_atmos", obj ); break;
     case 'si_lps25h_temp' : updateChartDaily( "si_lps25h_temp",  obj ); break;
     case 'si_tsl2561_lux' : updateChartDaily( "si_tsl2561_lux",  obj ); break;
-    default       : alert( "unknown sensor." ); break;
+    default               : alert( "unknown sensor." ); break;
   }
 });
 
@@ -296,12 +318,13 @@ function sendSetCmd( cmd ){
  * @example
  * rotateScreen( 90 );
 */
-function rotateScreen( value ){
+function rotateScreen( which, value ){
   console.log( "[app.js] rotateScreen()" );
+  console.log( "[app.js] which = " + which );
   console.log( "[app.js] value = " + value );
 
   document.getElementById( "val_rotate" ).innerHTML = value.match( /\d+/ );
-  $("#cam_screen img").rotate( {angle:Number(value)} );
+  $( "#" + which + " img").rotate( {angle:Number(value)} );
 }
 
 

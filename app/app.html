@@ -54,7 +54,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">BT Sensors</a>
+      <a class="navbar-brand" href="#">BT Aqua</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
@@ -77,14 +77,15 @@
 <!-- Screen -->
 <div id="section_screen" class="container-fluid bg-1">
 <section>
-  <h1>Screen</h1>
+  <h1> </h1>
+  <br/>
   <div class="container">
     <div class="row">
       <div class="col-md-6">
         <div class="thumbnail">
           <!-- Screen -->
-          <div id="cam_screen1">
-            <img alt="" src="http://192.168.91.11:8080/?action=stream" style="height:100%;width:100%">
+          <div id="cam_screen0">
+            <img alt="" src="http://192.168.91.103:8080/?action=stream" style="height:100%;width:100%">
           </div>
         </div>
       </div>
@@ -93,42 +94,48 @@
         <div class="thumbnail">
           <!-- Screen -->
           <div id="cam_screen1">
-            <img alt="" src="http://192.168.91.11:8080/?action=stream" style="height:100%;width:100%">
+            <img alt="" src="http://192.168.91.103:8081/?action=stream" style="height:100%;width:100%">
           </div>
         </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-3">
-        <div class="well" style="background:rgba(0,0,0,0.2);">
-          ・画面回転：
-          <!-- Monitor Screen Control bar -->
-          <span id="val_rotate">0</span> °
-          <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( this.value )">
+      <div class="col-md-4">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="well" style="background:rgba(0,0,0,0.2);">
+              ・画面回転：
+              <!-- Monitor Screen Control bar -->
+              <span id="val_rotate">0</span> °
+              <span id="val_rotate">0</span> °
+              <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( 'cam_screen0', this.value )">
+              <br/>
+              <input class="slider-width" type="range" name="num" min="0" max="360" step="10" value="0" onchange="rotateScreen( 'cam_screen1', this.value )">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="well" style="background:rgba(0,0,0,0.2);">
+              ・Light：　
+              <!-- Light Controller -->
+              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>　
+              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-8">
         <div class="well" style="background:rgba(0,0,0,0.2);">
-          ・Light：　
-          <!-- Light Controller -->
-          <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>　
-          <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="well" style="background:rgba(0,0,0,0.2);">
-          <select name="センサ" oninput="sendGetCmdSensorOneDay();" id="val_which" style="color: #000;">
-            <option value="si_hdc1000_humi">湿度(HDC1000)</option>
-            <option value="si_hdc1000_temp">温度(HDC1000)</option>
-            <option value="si_lps25h_atmos">気圧(LPS25H)</option>
-            <option value="si_lps25h_temp">温度(LPS25H)</option>
-            <option value="si_tsl2561_lux">照度</option>
-          </select>
-
-          <div class="col-sm-2 chart" id="cid_sa_acc_y"></div>
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-4 chart" id="cid_top_sa_water"></div>
+              <div class="col-sm-4 chart" id="cid_top_si_hdc1000_humi"></div>
+              <div class="col-sm-4 chart" id="cid_top_si_hdc1000_temp"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -142,6 +149,7 @@
 <div id="section_sensor_now" class="container-fluid">
 <section>
   <h1>Sensor Now</h1>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out sa_water');">水位 [cm?]</button>
   <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 humi');">湿度(HDC1000) [%]</button>
   <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 temp');">温度(HDC1000) [℃]</button>
   <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
@@ -170,6 +178,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td>水位</td>
+          <td>[cm?]</td>
+          <td><span class="fix" id="val_sa_water">--</span></td>
+        </tr>
         <tr>
           <td>湿度(HDC1000)</td>
           <td>[%]</td>
@@ -209,10 +222,11 @@
   <h1>Sensor 30sec</h1>
   <div class="container">
     <div class="row">
-      <div class="col-sm-3 chart" id="cid_si_hdc1000_humi"></div>
-      <div class="col-sm-3 chart" id="cid_si_hdc1000_temp"></div>
+      <div class="col-sm-3 chart" id="cid_sa_water"></div>
     </div>
     <div class="row">
+      <div class="col-sm-3 chart" id="cid_si_hdc1000_humi"></div>
+      <div class="col-sm-3 chart" id="cid_si_hdc1000_temp"></div>
       <div class="col-sm-3 chart" id="cid_si_lps25h_atmos"></div>
       <div class="col-sm-3 chart" id="cid_si_lps25h_temp"></div>
     </div>
@@ -233,6 +247,7 @@
 
   <input style="color: #000;" type="date" name="日時指定" oninput="sendGetCmdSensorOneDay();" id="val_date">
   <select style="color: #000;" name="センサ" oninput="sendGetCmdSensorOneDay();" id="val_which">
+    <option value="sa_water">水位</option>
     <option value="si_hdc1000_humi">湿度(HDC1000)</option>
     <option value="si_hdc1000_temp">温度(HDC1000)</option>
     <option value="si_lps25h_atmos">気圧(LPS25H)</option>

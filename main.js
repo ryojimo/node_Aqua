@@ -79,10 +79,10 @@ function doRequest(
       }
     );
   break;
-  case '/bg.gif':
-    fs.readFile( './app/bg.gif', 'binary',
+  case '/bg.jpg':
+    fs.readFile( './app/bg.jpg', 'binary',
       function( err, data ){
-        res.writeHead( 200, {'Content-Type': 'image/gif',
+        res.writeHead( 200, {'Content-Type': 'image/jpg',
                              'Access-Control-Allow-Origin': '*'
                       } );
         res.write( data, 'binary' );
@@ -124,8 +124,10 @@ var io = socketio.listen( server );
 //-----------------------------------------------------------------------------
 var timerFlg;
 
-var si_hdc1000_humi  = new DataSensor( 'si_hdc1000_humi'  );
-var si_hdc1000_temp  = new DataSensor( 'si_hdc1000_temp'  );
+var sa_water        = new DataSensor( 'sa_water'        );
+
+var si_hdc1000_humi = new DataSensor( 'si_hdc1000_humi' );
+var si_hdc1000_temp = new DataSensor( 'si_hdc1000_temp' );
 
 var si_lps25h_atmos = new DataSensor( 'si_lps25h_atmos' );
 var si_lps25h_temp  = new DataSensor( 'si_lps25h_temp'  );
@@ -203,8 +205,10 @@ io.sockets.on( 'connection', function( socket ){
     var ret = false;
     switch( data.sensor )
     {
-    case si_hdc1000_humi.name  : ret = si_hdc1000_humi.UpdateDataOneDay( file );  obj = si_hdc1000_humi.dataOneDay;  break;
-    case si_hdc1000_temp.name  : ret = si_hdc1000_temp.UpdateDataOneDay( file );  obj = si_hdc1000_temp.dataOneDay;  break;
+    case sa_water.name        : ret = sa_water.UpdateDataOneDay( file );        obj = sa_water.dataOneDay;        break;
+
+    case si_hdc1000_humi.name : ret = si_hdc1000_humi.UpdateDataOneDay( file ); obj = si_hdc1000_humi.dataOneDay; break;
+    case si_hdc1000_temp.name : ret = si_hdc1000_temp.UpdateDataOneDay( file ); obj = si_hdc1000_temp.dataOneDay; break;
 
     case si_lps25h_atmos.name : ret = si_lps25h_atmos.UpdateDataOneDay( file ); obj = si_lps25h_atmos.dataOneDay; break;
     case si_lps25h_temp.name  : ret = si_lps25h_temp.UpdateDataOneDay( file );  obj = si_lps25h_temp.dataOneDay;  break;
@@ -276,6 +280,8 @@ function getSensorDataLast30s( cmd ){
 
       var obj = (new Function("return " + stdout))();
 
+      sa_water.UpdateDataLast30s( obj.sa_water );
+
       si_hdc1000_humi.UpdateDataLast30s( obj.si_hdc1000_humi );
       si_hdc1000_temp.UpdateDataLast30s( obj.si_hdc1000_temp );
 
@@ -285,6 +291,7 @@ function getSensorDataLast30s( cmd ){
       si_tsl2561_lux.UpdateDataLast30s( obj.si_tsl2561_lux );
 
       var data = { 
+                   sa_water:0,
                    si_hdc1000_humi:0,
                    si_hdc1000_temp:0,
                    si_lps25h_atmos:0,
@@ -292,8 +299,10 @@ function getSensorDataLast30s( cmd ){
                    si_tsl2561_lux:0
       };
 
-      data.si_hdc1000_humi  = si_hdc1000_humi.dataLast30s;
-      data.si_hdc1000_temp  = si_hdc1000_temp.dataLast30s;
+      data.sa_water        = sa_water.dataLast30s;
+
+      data.si_hdc1000_humi = si_hdc1000_humi.dataLast30s;
+      data.si_hdc1000_temp = si_hdc1000_temp.dataLast30s;
 
       data.si_lps25h_atmos = si_lps25h_atmos.dataLast30s;
       data.si_lps25h_temp  = si_lps25h_temp.dataLast30s;
