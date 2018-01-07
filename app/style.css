@@ -56,13 +56,13 @@ footer a:hover {
 .chart{
   margin: 0.5em 0.2em 1em 1em;
   width: 200px;
-  height: 160px;
+  height: 180px;
   display: inline-block;
 }
 
 .chartDaily{
   margin: 1em 0.2em 1em 1em;
   width: 83%;
-  height: 160px;
+  height: 180px;
 }
 

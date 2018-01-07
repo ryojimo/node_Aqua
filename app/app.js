@@ -13,16 +13,16 @@ var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
 
 //-----------------------------------------------------------------------------
 //-------------------------------------
-var obj_sa_water        = {chart:null, data:null};
-var obj_si_hdc1000_humi = {chart:null, data:null};
-var obj_si_hdc1000_temp = {chart:null, data:null};
-var obj_si_lps25h_atmos = {chart:null, data:null};
-var obj_si_lps25h_temp  = {chart:null, data:null};
-var obj_si_tsl2561_lux  = {chart:null, data:null};
+var obj_sa_water        = {chart:null, data:null, color:'#1565C0', title:"水位", unit:"[cm?]"};
+var obj_si_hdc1000_humi = {chart:null, data:null, color:'#00796B', title:"湿度(hdc1000)", unit:"[%]"};
+var obj_si_hdc1000_temp = {chart:null, data:null, color:'#C2185B', title:"温度(hdc1000)", unit:"[℃]"};
+var obj_si_lps25h_atmos = {chart:null, data:null, color:'#1976D2', title:"気圧(lps25h)", unit:"[hPa]"};
+var obj_si_lps25h_temp  = {chart:null, data:null, color:'#C2185B', title:"温度(lps25h)", unit:"[℃]"};
+var obj_si_tsl2561_lux  = {chart:null, data:null, color:'#AFB42B', title:"照度(tsl2561)", unit:"[LUX]"};
 
-var obj_top_sa_water        = {chart:null, data:null};
-var obj_top_si_hdc1000_humi = {chart:null, data:null};
-var obj_top_si_hdc1000_temp = {chart:null, data:null};
+var obj_top_sa_water        = {chart:null, data:null, color:'#1565C0', title:"水位", unit:"[cm?]"};
+var obj_top_si_hdc1000_humi = {chart:null, data:null, color:'#00796B', title:"湿度(hdc1000)", unit:"[%]"};
+var obj_top_si_hdc1000_temp = {chart:null, data:null, color:'#C2185B', title:"温度(hdc1000)", unit:"[℃]"};
 
 var obj_sensors_daily = {chart:null, data:null};
 
@@ -31,12 +31,12 @@ var obj_sensors_daily = {chart:null, data:null};
 window.onload = function(){
   console.log( "[app.js] window.onloaded" );
 
-  obj_sa_water        = makeChart30s( "cid_sa_water",        "sa_water"        );
-  obj_si_hdc1000_humi = makeChart30s( "cid_si_hdc1000_humi", "si_hdc1000_humi" );
-  obj_si_hdc1000_temp = makeChart30s( "cid_si_hdc1000_temp", "si_hdc1000_temp" );
-  obj_si_lps25h_atmos = makeChart30s( "cid_si_lps25h_atmos", "si_lps25h_atmos" );
-  obj_si_lps25h_temp  = makeChart30s( "cid_si_lps25h_temp",  "si_lps25h_temp"  );
-  obj_si_tsl2561_lux  = makeChart30s( "cid_si_tsl2561_lux",  "si_tsl2561_lux"  );
+  obj_sa_water        = makeChart30s( "cid_sa_water",        obj_sa_water        );
+  obj_si_hdc1000_humi = makeChart30s( "cid_si_hdc1000_humi", obj_si_hdc1000_humi );
+  obj_si_hdc1000_temp = makeChart30s( "cid_si_hdc1000_temp", obj_si_hdc1000_temp );
+  obj_si_lps25h_atmos = makeChart30s( "cid_si_lps25h_atmos", obj_si_lps25h_atmos );
+  obj_si_lps25h_temp  = makeChart30s( "cid_si_lps25h_temp",  obj_si_lps25h_temp  );
+  obj_si_tsl2561_lux  = makeChart30s( "cid_si_tsl2561_lux",  obj_si_tsl2561_lux  );
   obj_sa_water.chart.render();
   obj_si_hdc1000_humi.chart.render();
   obj_si_hdc1000_temp.chart.render();
@@ -44,9 +44,9 @@ window.onload = function(){
   obj_si_lps25h_temp.chart.render();
   obj_si_tsl2561_lux.chart.render();
 
-  obj_top_sa_water        = makeChart30s( "cid_top_sa_water",        "水位[cm]" );
-  obj_top_si_hdc1000_humi = makeChart30s( "cid_top_si_hdc1000_humi", "湿度[%]"  );
-  obj_top_si_hdc1000_temp = makeChart30s( "cid_top_si_hdc1000_temp", "温度[℃]" );
+  obj_top_sa_water        = makeChart30s( "cid_top_sa_water",         obj_top_sa_water        );
+  obj_top_si_hdc1000_humi = makeChart30s( "cid_top_si_hdc1000_humi",  obj_top_si_hdc1000_humi );
+  obj_top_si_hdc1000_temp = makeChart30s( "cid_top_si_hdc1000_temp",  obj_top_si_hdc1000_temp );
   obj_top_sa_water.chart.render();
   obj_top_si_hdc1000_humi.chart.render();
   obj_top_si_hdc1000_temp.chart.render();
@@ -64,26 +64,39 @@ window.onunload = function(){
 /**
  * 30sec のデータを表示するグラフ ( チャート ) を作成する。
  * @param {string} domid - グラフを表示する DOM の ID 名
- * @param {string} title - グラフに表示するタイトル
- * @return {string} chart - 作成するグラフのオブジェクトとデータ
+ * @param {object} obj - グラフ化する対象のオブジェクト
+ * @return {object} chart - 作成するグラフのオブジェクトとデータ
  * @example
- * makeChart30s( "chart_sensor_temp", "temp", data );
+ * makeChart30s( "cid_sa_acc_x", obj_sa_acc_x );
 */
-function makeChart30s( domid, title ){
+function makeChart30s( domid, obj ){
   console.log( "[app.js] makeChart30s()" );
   console.log( "[app.js] domid = " + domid );
-  console.log( "[app.js] title = " + title );
 
   var data = new Array({label:"30秒前", y:0}, {label:"20秒前", y:0}, {label:"10秒前", y:0}, {label:"今", y:0});
 
-  var obj = new CanvasJS.Chart(domid, {
-    title:{text: title},
+  var chart = new CanvasJS.Chart(domid, {
+    animationEnabled: true,
+    animationDuration: 2000,
+    title:{text: obj.title,
+           fontColor: '#222',
+           fontSize: 16,
+    },
+    subtitles:[{text: '単位: ' + obj.unit,
+                fontColor: '#555',
+                fontSize: 12,
+               }
+    ],
+    axisX: { labelAngle:-45, labelFontSize:14, labelFontColor:'#222' },
+    axisY: { labelFontSize:14, labelFontColor:'#222' },
     data: [{type: 'area',           // グラフの種類 (area, bar, bubble, column, stackedColumn )
+            color: obj.color,
+            cursor: "pointer",
             dataPoints: data        // グラフに描画するデータ
     }]
   });
 
-  return {chart:obj, data:data};
+  return {chart:chart, data:data};
 };
 
 
