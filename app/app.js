@@ -3,7 +3,8 @@
  * @author       Ryoji Morita
  * @version      0.0.1
 */
-var sv_ip   = "aqua.rp.lfx.sony.co.jp";   // node.js server の IP アドレス
+var sv_ip   = "aqua.rp.lfx.sony.co.jp";       // node.js server の IP アドレス
+//var sv_ip   = "sensor.rp.lfx.sony.co.jp";   // node.js server の IP アドレス
 //var sv_ip   = "43.31.78.45";                // node.js server の IP アドレス
 //var sv_ip   = "192.168.91.11";              // node.js server の IP アドレス
 var sv_port = 3000;                           // node.js server の port 番号
@@ -13,14 +14,14 @@ var server = io.connect( "http://" + sv_ip + ":" + sv_port ); //ローカル
 
 //-----------------------------------------------------------------------------
 //-------------------------------------
-var obj_sa_water        = {chart:null, data:null, color:'#1565C0', title:"水位", unit:"[cm?]"};
+var obj_sa_water        = {chart:null, data:null, color:'#5C6BC0', title:"水位", unit:"[cm?]"};
 var obj_si_hdc1000_humi = {chart:null, data:null, color:'#00796B', title:"湿度(hdc1000)", unit:"[%]"};
 var obj_si_hdc1000_temp = {chart:null, data:null, color:'#C2185B', title:"温度(hdc1000)", unit:"[℃]"};
 var obj_si_lps25h_atmos = {chart:null, data:null, color:'#1976D2', title:"気圧(lps25h)", unit:"[hPa]"};
 var obj_si_lps25h_temp  = {chart:null, data:null, color:'#C2185B', title:"温度(lps25h)", unit:"[℃]"};
 var obj_si_tsl2561_lux  = {chart:null, data:null, color:'#AFB42B', title:"照度(tsl2561)", unit:"[LUX]"};
 
-var obj_top_sa_water        = {chart:null, data:null, color:'#1565C0', title:"水位", unit:"[cm?]"};
+var obj_top_sa_water        = {chart:null, data:null, color:'#5C6BC0', title:"水位", unit:"[cm?]"};
 var obj_top_si_hdc1000_humi = {chart:null, data:null, color:'#00796B', title:"湿度(hdc1000)", unit:"[%]"};
 var obj_top_si_hdc1000_temp = {chart:null, data:null, color:'#C2185B', title:"温度(hdc1000)", unit:"[℃]"};
 
@@ -44,9 +45,9 @@ window.onload = function(){
   obj_si_lps25h_temp.chart.render();
   obj_si_tsl2561_lux.chart.render();
 
-  obj_top_sa_water        = makeChart30s( "cid_top_sa_water",         obj_top_sa_water        );
-  obj_top_si_hdc1000_humi = makeChart30s( "cid_top_si_hdc1000_humi",  obj_top_si_hdc1000_humi );
-  obj_top_si_hdc1000_temp = makeChart30s( "cid_top_si_hdc1000_temp",  obj_top_si_hdc1000_temp );
+  obj_top_sa_water        = makeChart30s( "cid_top_sa_water",        obj_top_sa_water        );
+  obj_top_si_hdc1000_humi = makeChart30s( "cid_top_si_hdc1000_humi", obj_top_si_hdc1000_humi );
+  obj_top_si_hdc1000_temp = makeChart30s( "cid_top_si_hdc1000_temp", obj_top_si_hdc1000_temp );
   obj_top_sa_water.chart.render();
   obj_top_si_hdc1000_humi.chart.render();
   obj_top_si_hdc1000_temp.chart.render();
