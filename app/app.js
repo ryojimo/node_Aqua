@@ -25,7 +25,7 @@ var obj_top_sa_water        = {chart:null, data:null, color:'#5C6BC0', title:"�
 var obj_top_si_hdc1000_humi = {chart:null, data:null, color:'#00796B', title:"湿度(hdc1000)", unit:"[%]"};
 var obj_top_si_hdc1000_temp = {chart:null, data:null, color:'#C2185B', title:"温度(hdc1000)", unit:"[℃]"};
 
-var obj_sensors_daily = {chart:null, data:null};
+var obj_sensors_daily = {chart:null, data:null, color:'#F06292', title:"一日のデータ", unit:""};
 
 
 // ブラウザオブジェクトから受け取るイベント
@@ -52,7 +52,7 @@ window.onload = function(){
   obj_top_si_hdc1000_humi.chart.render();
   obj_top_si_hdc1000_temp.chart.render();
 
-  obj_sensors_daily   = makeChart1d( "cid_sensors_daily",   "" );
+  obj_sensors_daily   = makeChart1d( "cid_sensors_daily", obj_sensors_daily );
   obj_sensors_daily.chart.render();
 };
 
@@ -104,15 +104,14 @@ function makeChart30s( domid, obj ){
 /**
  * 1 day のデータを表示するグラフ ( チャート ) を作成する。
  * @param {string} domid - グラフを表示する DOM の ID 名
- * @param {string} title - グラフに表示するタイトル
+ * @param {object} obj - グラフ化する対象のオブジェクト
  * @return {string} chart - 作成するグラフのオブジェクトとデータ
  * @example
- * makeChart1d( "chart_sensor_temp", "temp", data );
+ * makeChart1d( "cid_sensors_daily", obj_sensors_daily );
 */
-function makeChart1d( domid, title ){
+function makeChart1d( domid, obj ){
   console.log( "[app.js] makeChart1d()" );
   console.log( "[app.js] domid = " + domid );
-  console.log( "[app.js] title = " + title );
 
   var data = new Array({label:"00-00", y:0}, {label:"01-00", y:0}, {label:"02-00", y:0}, {label:"03-00", y:0},
                        {label:"04-00", y:0}, {label:"05-00", y:0}, {label:"06-00", y:0}, {label:"07-00", y:0},
@@ -122,13 +121,28 @@ function makeChart1d( domid, title ){
                        {label:"20-00", y:0}, {label:"21-00", y:0}, {label:"22-00", y:0}, {label:"23-00", y:0}
                       );
 
-  var obj = new CanvasJS.Chart(domid, {
-    title:{text: title},
+  var chart = new CanvasJS.Chart(domid, {
+    animationEnabled: true,
+    animationDuration: 2000,
+    title:{text: obj.title,
+           fontColor: '#222',
+           fontSize: 16,
+    },
+    subtitles:[{text: '単位: ' + obj.unit,
+                fontColor: '#555',
+                fontSize: 12,
+               }
+    ],
+    axisX: { labelAngle:-45, labelFontSize:14, labelFontColor:'#222' },
+    axisY: { labelFontSize:14, labelFontColor:'#222' },
     data: [{type: 'area',           // グラフの種類 (area, bar, bubble, column, stackedColumn )
+            color: obj.color,
+            cursor: "pointer",
             dataPoints: data        // グラフに描画するデータ
     }]
   });
-  return {chart:obj, data:data};
+
+  return {chart:chart, data:data};
 };
 
 
