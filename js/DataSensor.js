@@ -66,7 +66,7 @@ DataSensor.prototype.UpdateDataLast30s = function( data ){
  * @param {string} file - 対象のファイル ( フルパス )
  * @return {object} ret - 読み出したデータ
  * @example
- * UpdateDataOneDay( file );
+ * var obj = UpdateDataOneDay( "/media/pi/USBDATA/2018-01-23_sensor.txt" );
 */
 DataSensor.prototype.UpdateDataOneDay = function( file ){
   console.log( "[DataSensor.js] UpdateDataOneDay()" );
