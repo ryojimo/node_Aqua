@@ -127,8 +127,8 @@
             <div class="col-md-12">
               ・Light：　
               <!-- Light Controller -->
-              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay on' );">ON</button>　
-              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out relay off' );">OFF</button>
+              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out --relay on' );">ON</button>　
+              <button type="button" class="btn btn-default btn-md" onclick="sendSetCmd( 'sudo ./board.out --relay off' );">OFF</button>
             </div>
           </div>
         </div>
@@ -156,12 +156,12 @@
 <div id="section_sensor_now" class="container-fluid">
 <section>
   <h1>Sensor Now</h1>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out sa_water');">水位 [cm?]</button>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 humi');">湿度(HDC1000) [%]</button>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_hdc1000 temp');">温度(HDC1000) [℃]</button>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_lps25h temp');">温度(LPS25H) [℃]</button>
-  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out si_tsl2561 lux');">照度 [ルクス]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --sa_water');">水位 [cm?]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --si_hdc1000 humi');">湿度(HDC1000) [%]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --si_hdc1000 temp');">温度(HDC1000) [℃]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --si_lps25h atmos');">気圧(LPS25H) [hPa]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --si_lps25h temp');">温度(LPS25H) [℃]</button>
+  <button type="button" class="btn btn-default btn-md" onclick="sendGetCmd('sudo ./board.out --si_tsl2561 lux');">照度 [ルクス]</button>
 
   <h3>現在値：<span id="val_sensor">--</span></h3>
 </section>

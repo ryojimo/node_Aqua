@@ -149,7 +149,7 @@ function startSystem() {
   console.log( "[main.js] startSystem()" );
 
   timerFlg  = setInterval( function(){
-                getSensorDataLast30s( "sudo ./board.out sensors" );
+                getSensorDataLast30s( "sudo ./board.out --sensors" );
               }, 10000 );
 };
 
